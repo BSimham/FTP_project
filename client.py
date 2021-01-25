@@ -21,7 +21,7 @@ class ScrollableFrame(ttk.Frame):
             )
         )
 
-        canvas.create_window((0,0), window=self.scrollable_frame, anchor="center")
+        canvas.create_window((0,0), window=self.scrollable_frame, anchor="nw")
 
         canvas.configure(yscrollcommand=scrollbar.set)
 

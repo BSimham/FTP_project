@@ -22,13 +22,24 @@ def set_connection():
     # c.send(name.encode())
     # print(c.recv(1024).decode())
     print("Connected to server")
+def re_name(lokn,fl):
+    rt=Tk()
+    rt.geometry("400x200")
+    lbl=Label(rt,text=lokn+fl)
+    lbl.pack()
+    rt.mainloop()
 
-nb=1
+
+
+
+nb=5
 def get_files():
     global nb
     locn = 'locn:' + lcn_etr.get()
     s.sendall(locn.encode())
     # con=0
+    for widget in second_frame.winfo_children():
+        widget.destroy()
     while True:
         data = s.recv(1024).decode()
         # con+=1
@@ -36,6 +47,7 @@ def get_files():
         if data == 'endlast':
             break
         t = 0
+        i=0
         for file in data.split('&'):
             if file == 'endlast':
                 t = 1
@@ -46,13 +58,34 @@ def get_files():
                 continue
 
             if os.path.isfile(os.path.join(locn[5:], file)):
-                Button(second_frame, width=50, text=f'{file}', fg='#ff1944', bg='blue').grid(row=nb,column=0,padx=1,pady=1)
+                menubutton=Menubutton(second_frame, width=50, text=f'{file}', fg='#ff1944', bg='blue')
+                menubutton.grid(row=nb,column=1,padx=1,pady=1)
+                menubutton.menu = Menu(menubutton, tearoff=0,activeborderwidth=25)
+
+                menubutton["menu"] = menubutton.menu
+
+                menubutton.menu.add_command(label="Rename",command=lambda :re_name(locn[5:],menubutton["text"]))
+
+                menubutton.menu.add_command(label="Size ")
+                menubutton.menu.add_command(label="Date created")
+                menubutton.menu.add_command(label="Download")
+
                 nb=nb+1
 
                 continue
 
             # if os.path.isdir(os.path.join(locn[5:], file)):
-            Button(second_frame, width=50, text=f'{file}',bg='green').grid(row=nb,column=0,padx=1,pady=1) # ,command=btn_clicked(os.path.join(locn, file)))
+            menubutton=Menubutton(second_frame, width=50, text=f'{file}',bg='green')# ,command=btn_clicked(os.path.join(locn, file)))
+            menubutton.grid(row=nb,column=1,padx=1,pady=1)
+            menubutton.menu = Menu(menubutton, tearoff=0,activeborderwidth=25)
+            menubutton["menu"] = menubutton.menu
+
+            menubutton.menu.add_command(label="Rename",command=lambda : re_name(locn[5:],menubutton["text"]))
+
+            menubutton.menu.add_command(label="Size ")
+            menubutton.menu.add_command(label="Date created")
+            menubutton.menu.add_command(label="Open")
+
             nb=nb+1
             #    continue
             # file_btn = tk.Button(frame1, width=300, text=f'{file}')
@@ -63,7 +96,8 @@ def get_files():
             print(nb)
             break
 
-
+frameh=Frame(root)
+frameh.pack()
 # create a main frame
 main_frame = Frame(root)
 main_frame.pack(fill=BOTH, expand=1)
@@ -86,23 +120,22 @@ second_frame = Frame(my_canvas)
 # add the new frame to a window in the canvas
 my_canvas.create_window((0, 0), window=second_frame, anchor='nw')
 
-Addr_label = Label(second_frame, text="Server Address : ")
-Addr_label.grid(row=0, sticky=E, padx=10)
+Addr_label = Label(frameh, text="Server Address : ")
+Addr_label.grid(row=0,column=0, sticky=E, padx=10,pady=10)
+Addr_etr = Entry(frameh)
+Addr_etr.grid(row=0, column=1, sticky=W, padx=10,pady=10)
+port_label = Label(frameh, text="Port No : ")
+port_label.grid(row=0, column=2, sticky=E, padx=10,pady=10)
 
-Addr_etr = Entry(second_frame)
-Addr_etr.grid(row=0, column=1, sticky=W, padx=10)
-
-port_label = Label(second_frame, text="Port No : ")
-port_label.grid(row=0, column=2, sticky=E, padx=10)
-port_etr = Entry(second_frame)
-port_etr.grid(row=0, column=3, sticky=W, padx=10)
-cnt_button = Button(second_frame, text="Connect", width=40, height=5,command=set_connection)
+port_etr = Entry(frameh)
+port_etr.grid(row=0, column=3, sticky=W, padx=10,pady=10)
+cnt_button = Button(frameh, text="Connect", width=40,command=set_connection)
 cnt_button.grid(row=0, column=4)
-lcn_label = Label(second_frame, text="Enter Location : ")
+lcn_label = Label(frameh, text="Enter Location : ")
 lcn_label.grid(row=0, column=5, sticky=E)
-lcn_etr = Entry(second_frame)
+lcn_etr = Entry(frameh)
 lcn_etr.grid(row=0, column=6, sticky=W)
-get_files_btn = Button(second_frame, text="GET files", command=get_files)
+get_files_btn = Button(frameh, text="GET files", command=get_files)
 get_files_btn.grid(row=0, column=7)
 
 # for thing in range(100):

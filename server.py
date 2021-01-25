@@ -3,7 +3,7 @@ import os
 
 #  Socket creation
 s = socket.socket()
-s.bind(('localhost', 9999))
+s.bind(("192.168.43.22",9999))
 s.listen(5)
 
 print('socket created')
@@ -13,7 +13,7 @@ print('waiting for connections')
 
 def do_service():
     c, address = s.accept()
-    # print('Connected with ', address)
+    print('Connected with ', address)
     # Accept connections
 
     while True:
