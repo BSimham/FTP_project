@@ -3,7 +3,6 @@ import socket
 from tkinter import *
 from tkinter import ttk
 
-
 s = socket.socket()
 root = Tk()
 root.title('Scroll test')
@@ -22,32 +21,57 @@ def set_connection():
     # c.send(name.encode())
     # print(c.recv(1024).decode())
     print("Connected to server")
-def re_name(lokn,fl):
-    rt=Tk()
+
+
+def re_rename(rt,lokn,fl,etr):
+    os.rename(f'{lokn}/{fl}', f'{lokn}/{etr}')
+    rt.destroy()
+    pass
+
+
+def re_name(lokn, fl):
+    rt = Tk()
     rt.geometry("400x200")
-    lbl=Label(rt,text=lokn+fl)
-    lbl.pack()
+    lbl = Label(rt, text='Current Name: ')
+    lbl.grid(row=0, column=0, sticky=E, padx=5, pady=5)
+    lbl1 = Label(rt, text=fl)
+    lbl1.grid(row=0, column=1, sticky=W, padx=5, pady=5)
+    lbl2 = Label(rt, text="Enter New Name: ")
+    lbl2.grid(row=1, column=0, sticky=E, padx=5, pady=5)
+    etr = Entry(rt)
+    etr.grid(row=1, column=1, sticky=W, padx=5, pady=5)
+    btn = Button(rt, text='Rename',command=lambda rt=rt,lokn=lokn,fl=fl:re_rename(rt,lokn,fl,etr.get()))
+    btn.grid()
+
+
+
     rt.mainloop()
 
 
+# = 0
+nb = 0
 
 
-nb=5
 def get_files():
     global nb
+    # global i
     locn = 'locn:' + lcn_etr.get()
     s.sendall(locn.encode())
     # con=0
     for widget in second_frame.winfo_children():
         widget.destroy()
+    text1 = []
+    d = {}
+    i = 0
     while True:
+
         data = s.recv(1024).decode()
         # con+=1
         # print(con)
         if data == 'endlast':
             break
         t = 0
-        i=0
+
         for file in data.split('&'):
             if file == 'endlast':
                 t = 1
@@ -56,37 +80,41 @@ def get_files():
                 continue
             if '$' in file:
                 continue
+            text1.append(f'{file}')
 
             if os.path.isfile(os.path.join(locn[5:], file)):
-                menubutton=Menubutton(second_frame, width=50, text=f'{file}', fg='#ff1944', bg='blue')
-                menubutton.grid(row=nb,column=1,padx=1,pady=1)
-                menubutton.menu = Menu(menubutton, tearoff=0,activeborderwidth=25)
+                menubutton = Menubutton(second_frame, width=50, text=f'{file}', fg='#ff1944', bg='blue')
+                menubutton.grid(row=nb, column=1, padx=1, pady=1)
+                menubutton.menu = Menu(menubutton, tearoff=0, activeborderwidth=25)
 
                 menubutton["menu"] = menubutton.menu
 
-                menubutton.menu.add_command(label="Rename",command=lambda :re_name(locn[5:],menubutton["text"]))
+                menubutton.menu.add_command(label="Rename", command=lambda i=i: re_name(locn[5:], text1[i]))
 
                 menubutton.menu.add_command(label="Size ")
                 menubutton.menu.add_command(label="Date created")
                 menubutton.menu.add_command(label="Download")
-
-                nb=nb+1
-
+                i = i + 1
+                nb = nb + 1
+                print(i)
                 continue
 
             # if os.path.isdir(os.path.join(locn[5:], file)):
-            menubutton=Menubutton(second_frame, width=50, text=f'{file}',bg='green')# ,command=btn_clicked(os.path.join(locn, file)))
-            menubutton.grid(row=nb,column=1,padx=1,pady=1)
-            menubutton.menu = Menu(menubutton, tearoff=0,activeborderwidth=25)
+            menubutton = Menubutton(second_frame, width=50, text=f'{file}',
+                                    bg='green')  # ,command=btn_clicked(os.path.join(locn, file)))
+            menubutton.grid(row=nb, column=1, padx=1, pady=1)
+            menubutton.menu = Menu(menubutton, tearoff=0, activeborderwidth=25)
             menubutton["menu"] = menubutton.menu
 
-            menubutton.menu.add_command(label="Rename",command=lambda : re_name(locn[5:],menubutton["text"]))
+            menubutton.menu.add_command(label="Rename", command=lambda i=i: re_name(locn[5:], text1[i]))
 
             menubutton.menu.add_command(label="Size ")
             menubutton.menu.add_command(label="Date created")
             menubutton.menu.add_command(label="Open")
 
-            nb=nb+1
+            nb = nb + 1
+            i = i + 1
+            print(i)
             #    continue
             # file_btn = tk.Button(frame1, width=300, text=f'{file}')
             # file_btn.pack()
@@ -96,7 +124,8 @@ def get_files():
             print(nb)
             break
 
-frameh=Frame(root)
+
+frameh = Frame(root)
 frameh.pack()
 # create a main frame
 main_frame = Frame(root)
@@ -121,15 +150,15 @@ second_frame = Frame(my_canvas)
 my_canvas.create_window((0, 0), window=second_frame, anchor='nw')
 
 Addr_label = Label(frameh, text="Server Address : ")
-Addr_label.grid(row=0,column=0, sticky=E, padx=10,pady=10)
+Addr_label.grid(row=0, column=0, sticky=E, padx=10, pady=10)
 Addr_etr = Entry(frameh)
-Addr_etr.grid(row=0, column=1, sticky=W, padx=10,pady=10)
+Addr_etr.grid(row=0, column=1, sticky=W, padx=10, pady=10)
 port_label = Label(frameh, text="Port No : ")
-port_label.grid(row=0, column=2, sticky=E, padx=10,pady=10)
+port_label.grid(row=0, column=2, sticky=E, padx=10, pady=10)
 
 port_etr = Entry(frameh)
-port_etr.grid(row=0, column=3, sticky=W, padx=10,pady=10)
-cnt_button = Button(frameh, text="Connect", width=40,command=set_connection)
+port_etr.grid(row=0, column=3, sticky=W, padx=10, pady=10)
+cnt_button = Button(frameh, text="Connect", width=40, command=set_connection)
 cnt_button.grid(row=0, column=4)
 lcn_label = Label(frameh, text="Enter Location : ")
 lcn_label.grid(row=0, column=5, sticky=E)
